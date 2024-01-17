@@ -1,4 +1,5 @@
 
+import os
 import sys
 import argparse
 import logging
@@ -59,7 +60,7 @@ def main():
     adjust_group = parser.add_mutually_exclusive_group(required=True)
     adjust_group.add_argument('-p', '--ppm', type=float, default=None,
                               help='Mass adjustment in parts per million (ppm)')
-    adjust_group.add_argument('-t', '--th' type=float, default=None,
+    adjust_group.add_argument('-t', '--th', type=float, default=None,
                               help='Mass adjustment in Thomson (Th)')
 
     parser.add_argument('mzML', help='The mzML file to adjust.')
@@ -72,20 +73,25 @@ def main():
         ofname = args.mzML
     elif args.suffix:
         base, ext = os.path.splitext(args.mzML)
-        ofname = f'{base}_{suffix}.{ext}'
+        ofname = f'{base}_{args.suffix}{ext}'
     elif args.ofname:
         ofname = args.ofname
     else:
-        raise RuntimeError('Not able to determine output file name from arguments!')
+        LOGGER.error('Not able to determine output file name from arguments!')
+        sys.exit(1)
 
     # load msML file
+    LOGGER.info(f'Loading "{args.mzML}"')
     experiment = MSExperiment()
     MzMLFile().load(args.mzML, experiment)
+    LOGGER.info(f'Done loading "{args.mzML}"')
 
     # adjust m/z values
+    LOGGER.info('Adjusting m/z values')
     adjust_file(experiment, args.ppm, args.th)
 
     # write file
+    LOGGER.info(f'Writing adjusted values to: "{ofname}"')
     MzMLFile().store(ofname, experiment)
 
 

@@ -16,7 +16,7 @@ LOGGER = logging.getLogger()
 
 def adjust_file(experiment, ppm=None, th=None):
     '''
-    Shify all m/z values in experiment by either the specified ppm or Thomsons.
+    Shift all m/z values in experiment by either the specified ppm or Thomsons.
     Either ppm or th must be specified. The ppm and th options are mutually exclusive.
 
     Parameters
